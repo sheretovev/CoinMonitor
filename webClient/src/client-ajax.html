@@ -10,7 +10,6 @@
             .material {
                 min-height: 40px !important;
             }
-
         </style>
         <iron-ajax id="req"
                    url="[[reqUrl]]"
@@ -37,9 +36,10 @@
         </div>-->
     </template>
     <script>
-        Polymer({
-            is: 'client-ajax',
-            properties: {
+    class ClientAjax extends Polymer.Element {
+      static get is() { return 'client-ajax'; }
+        static get properties() {
+            return {
                 addLoadingPlaceholder: { type: Boolean, value: false },
                 showProgress: { type: Boolean, notify: true, value: false },
                 loaded: {type: Boolean, value: false, notify: true},
@@ -59,59 +59,57 @@
                 data: { type: Object },
                 errorMessage: String,
                 reqUrl: { type: String, computed: '__getUrl(__prefix,path)' }
-            },
-            __computeDrawPlaceholder: function (pl, l) {
-                return pl && !l && (this.hasAttribute("show-progress") || this.hasAttribute("add-loading-placeholder"));
-            },           
-            attached: function () {
-                     
-            },
-            __getUrl: function (p,u) {
-                return window.location.protocol + '//' + p +u;
-            },
-            getTokenString: function () {
-                return this.globals.AuthTokenEnc;
-            },
-            onResp: function(e,req){
-                if (this.__cb) {
-                    this.__cb(e,req);
-                }
-                this.loaded = true;              
-            },
-            onError: function(e, req){               
-                if (req.request.status == 403)
-                {
-                    console.log( "Access denied");
-                    this.accessDenied = true;
-                }else
-                if (req.request.status == 401)
-                {
-                    console.log('401');
-                    this.accessDenied = true;
-                }else
-                if (req.request.status == 400) {
-
-                }else
-                if (this.errorMessage) {
-                    console.log(this.errorMessage);
-                }
-                else {
-                    console.log("Unknown server error");
-                }
-                this.loaded = true;                
-            },
-            __cb: undefined,
-            generateRequest: function (cb) {
-                this.set(this.addLoadingPlaceholder == true ? "addLoadingPlaceholder" : "showProgress", true);                
-                this.set("loaded", false);
-                this.__cb = cb;
-                // if (MyApp.user) {
-                //     this.$.req.headers = {
-                //         Authorization: "Bearer " + MyApp.user.access_token,                        
-                //     };
-                // }     
-                this.$.req.generateRequest();
+            };
+        }
+        __computeDrawPlaceholder(pl, l) {
+            return pl && !l && (this.hasAttribute("show-progress") || this.hasAttribute("add-loading-placeholder"));
+        }   
+        __getUrl(p,u) {
+            return window.location.protocol + '//' + p +u;
+        }
+        getTokenString() {
+            return this.globals.AuthTokenEnc;
+        }
+        onResp(e,req){
+            if (this.__cb) {
+                this.__cb(e,req);
             }
-        });
+            this.loaded = true;              
+        }
+        onError(e, req){               
+            if (req.request.status == 403)
+            {
+                console.log( "Access denied");
+                this.accessDenied = true;
+            }else
+            if (req.request.status == 401)
+            {
+                console.log('401');
+                this.accessDenied = true;
+            }else
+            if (req.request.status == 400) {
+
+            }else
+            if (this.errorMessage) {
+                console.log(this.errorMessage);
+            }
+            else {
+                console.log("Unknown server error");
+            }
+            this.loaded = true;                
+        }
+        generateRequest(cb) {
+            this.set(this.addLoadingPlaceholder == true ? "addLoadingPlaceholder" : "showProgress", true);                
+            this.set("loaded", false);
+            this.__cb = cb;
+            // if (ClientAjax.user) {
+            //     this.$.req.headers = {
+            //         Authorization: "Bearer " + ClientAjax.user.access_token,                        
+            //     };
+            // }     
+            this.$.req.generateRequest();
+        }
+    }
+    window.customElements.define(ClientAjax.is, ClientAjax);  
     </script>
 </dom-module>

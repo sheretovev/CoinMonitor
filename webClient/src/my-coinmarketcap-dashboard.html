@@ -11,6 +11,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="shared-styles.html">
 
+<link rel="import" href="../bower_components/juicy-jsoneditor/juicy-jsoneditor.html">
+<link rel="import" href="client-ajax.html">
+
+
 <dom-module id="my-coinmarketcap-dashboard">
   <template>
     <style include="shared-styles">
@@ -24,13 +28,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="card">
       <div class="circle">2</div>
       <h1>Coinmarketcap Dashboard</h1>
-      <p>Dashboard will present information from Coinmarketcap</p>     
+      <p>Dashboard will present information from Coinmarketcap</p>  
+      <client-ajax id="tickers"                
+             add-loading-placeholder
+             path="/api/coinmarketcap/ticker"></client-ajax>  
+      <div hidden$="{{!showjson}}">      
+        <juicy-jsoneditor  id="jsoneditor"></juicy-jsoneditor> 
+      </div>
     </div>
   </template>
 
   <script>
     class CoinmarketcapDashboard extends Polymer.Element {
       static get is() { return 'my-coinmarketcap-dashboard'; }
+       static get properties() {
+        return {
+         showjson: {
+            type: Boolean,
+            notifies: true,
+            value: false
+          }
+        }
+      }
+      constructor() {
+        super();
+        this.$.tickers.generateRequest(this.handleLoadTickers.bind(this)); 
+      }
+      handleLoadTickers(event, request) {
+          super.handleLoadTickers(event, request);
+          console.log(this.contracts);  
+          this.$.jsoneditor.json = request.response;
+          this.showjson = true;
+      }
     }
     window.customElements.define(CoinmarketcapDashboard.is, CoinmarketcapDashboard);
   </script>
