@@ -1,0 +1,117 @@
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html" />
+
+<dom-module id="client-ajax">
+    <template>
+        <style include="shared-styles"></style>
+        <style include="paper-material-shared-styles"></style>
+        <style is="custom-style" include="iron-flex iron-flex-alignment"></style>        
+        <style>
+            .material {
+                min-height: 40px !important;
+            }
+
+        </style>
+        <iron-ajax id="req"
+                   url="[[reqUrl]]"
+                   on-error="onError"
+                   on-response="onResp"
+                   body="[[data]]"
+                   handle-as="json"                   
+                   method="[[method]]"
+                   content-type="application/json"
+                   debounce-duration="300"></iron-ajax>
+        
+        <template is="dom-if" if="[[drawPlaceholder]]" id="placeholderContainer" restamp>
+            <div class="material" id="placeholder">
+                <div class="content layout horizontal center-justified">
+                    <paper-progress indeterminate class="flex"></paper-progress>
+                </div>                
+            </div>
+        </template>
+        <template is="dom-if" if="[[drawProgress]]" id="progressContainer" restamp>                            
+            <paper-progress indeterminate style="width: 100%"></paper-progress>                
+        </template>       
+        <!--<div hidden$="[[!accessDenied]]">
+            Access denied!!!
+        </div>-->
+    </template>
+    <script>
+        Polymer({
+            is: 'client-ajax',
+            properties: {
+                addLoadingPlaceholder: { type: Boolean, value: false },
+                showProgress: { type: Boolean, notify: true, value: false },
+                loaded: {type: Boolean, value: false, notify: true},
+                accessDenied: Boolean,
+                drawPlaceholder: { type: Boolean, computed: "__computeDrawPlaceholder(addLoadingPlaceholder,loaded)" },
+                drawProgress: { type: Boolean, computed: "__computeDrawPlaceholder(showProgress,loaded)" },
+                path: {
+                    type: String,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                method: {
+                    type: String,                    
+                    notify: true
+                },
+                __prefix: { type: String, value: AppBehaviors.private.dataGlobal.ApiAddress },
+                data: { type: Object },
+                errorMessage: String,
+                reqUrl: { type: String, computed: '__getUrl(__prefix,path)' }
+            },
+            __computeDrawPlaceholder: function (pl, l) {
+                return pl && !l && (this.hasAttribute("show-progress") || this.hasAttribute("add-loading-placeholder"));
+            },           
+            attached: function () {
+                     
+            },
+            __getUrl: function (p,u) {
+                return window.location.protocol + '//' + p +u;
+            },
+            getTokenString: function () {
+                return this.globals.AuthTokenEnc;
+            },
+            onResp: function(e,req){
+                if (this.__cb) {
+                    this.__cb(e,req);
+                }
+                this.loaded = true;              
+            },
+            onError: function(e, req){               
+                if (req.request.status == 403)
+                {
+                    console.log( "Access denied");
+                    this.accessDenied = true;
+                }else
+                if (req.request.status == 401)
+                {
+                    console.log('401');
+                    this.accessDenied = true;
+                }else
+                if (req.request.status == 400) {
+
+                }else
+                if (this.errorMessage) {
+                    console.log(this.errorMessage);
+                }
+                else {
+                    console.log("Unknown server error");
+                }
+                this.loaded = true;                
+            },
+            __cb: undefined,
+            generateRequest: function (cb) {
+                this.set(this.addLoadingPlaceholder == true ? "addLoadingPlaceholder" : "showProgress", true);                
+                this.set("loaded", false);
+                this.__cb = cb;
+                // if (MyApp.user) {
+                //     this.$.req.headers = {
+                //         Authorization: "Bearer " + MyApp.user.access_token,                        
+                //     };
+                // }     
+                this.$.req.generateRequest();
+            }
+        });
+    </script>
+</dom-module>

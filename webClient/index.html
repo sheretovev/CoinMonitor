@@ -84,6 +84,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </script>
 
+    <script>
+        window.AppBehaviours = window.AppBehaviours || {
+            private: {
+                instances: [],
+                dataGlobal: {}
+            }
+        };
+    </script>    
+    <script src="/app-config.js"></script>
+
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 

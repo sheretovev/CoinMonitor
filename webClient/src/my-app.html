@@ -22,8 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="my-icons.html">
 
-<link rel="lazy-import" href="my-view1.html">
-<link rel="lazy-import" href="my-view2.html">
+<link rel="lazy-import" href="my-binance-dashboard.html">
+<link rel="lazy-import" href="my-coinmarketcap-dashboard.html">
 <link rel="lazy-import" href="my-view3.html">
 <link rel="lazy-import" href="my-view404.html">
 
@@ -85,8 +85,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="[[rootPath]]view1">View One</a>
-          <a name="view2" href="[[rootPath]]view2">View Two</a>
+          <a name="binance-dashboard" href="[[rootPath]]binance-dashboard">Binance Dashboard</a>
+          <a name="coinmarketcap-dashboard" href="[[rootPath]]coinmarketcap-dashboard">Coinmarketcap Dashboard</a>
           <a name="view3" href="[[rootPath]]view3">View Three</a>
         </iron-selector>
       </app-drawer>
@@ -106,8 +106,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
+          <my-binance-dashboard name="binance-dashboard"></my-binance-dashboard>
+          <my-coinmarketcap-dashboard name="coinmarketcap-dashboard"></my-coinmarketcap-dashboard>
           <my-view3 name="view3"></my-view3>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
